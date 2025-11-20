@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { RefreshCw } from 'lucide-react'
 import toast from 'react-hot-toast'
-
-const API_URL = 'http://localhost:8000'
+import APIService from '../services/api'
 
 export default function Prices() {
   const [prices, setPrices] = useState({})
@@ -15,10 +14,14 @@ export default function Prices() {
   const refreshPrices = async () => {
     setLoading(true)
     try {
-      const response = await fetch(`${API_URL}/prices/latest`)
-      const data = await response.json()
-      setPrices(data.data || {})
-      toast.success('Cotizaciones actualizadas')
+      const result = await APIService.get('/prices/latest')
+
+      if (result.success) {
+        setPrices(result.data.data || {})
+        toast.success('Cotizaciones actualizadas')
+      } else {
+        toast.error(result.error || 'Error al obtener cotizaciones')
+      }
     } catch (error) {
       toast.error('Error al obtener cotizaciones')
       console.error(error)

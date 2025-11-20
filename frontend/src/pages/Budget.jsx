@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { Calculator, Download, Share2 } from 'lucide-react'
 import toast from 'react-hot-toast'
-
-const API_URL = 'http://localhost:8000'
+import APIService from '../services/api'
 
 export default function Budget() {
   const [buyers, setBuyers] = useState([])
@@ -25,9 +24,10 @@ export default function Budget() {
 
   const loadBuyers = async () => {
     try {
-      const response = await fetch(`${API_URL}/buyers/?limit=100`)
-      const data = await response.json()
-      setBuyers(data)
+      const result = await APIService.get('/buyers/?limit=100')
+      if (result.success) {
+        setBuyers(result.data)
+      }
     } catch (error) {
       console.error(error)
     }
@@ -51,18 +51,13 @@ export default function Budget() {
 
     setLoading(true)
     try {
-      const response = await fetch(`${API_URL}/budgets/generate`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData)
-      })
+      const result = await APIService.post('/budgets/generate', formData)
 
-      const data = await response.json()
-      if (response.ok) {
-        setResult(data)
+      if (result.success) {
+        setResult(result.data)
         toast.success('Presupuesto generado correctamente')
       } else {
-        toast.error('Error al generar presupuesto')
+        toast.error(result.error || 'Error al generar presupuesto')
       }
     } catch (error) {
       toast.error('Error al generar presupuesto')

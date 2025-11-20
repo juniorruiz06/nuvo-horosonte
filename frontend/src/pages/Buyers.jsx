@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { RefreshCw, Search } from 'lucide-react'
 import BuyerCard from '../components/BuyerCard'
 import toast from 'react-hot-toast'
-import { API_URL } from '../config'
+import APIService from '../services/api'
 
 export default function Buyers() {
   const [buyers, setBuyers] = useState([])
@@ -25,11 +25,16 @@ export default function Buyers() {
   const loadBuyers = async () => {
     setLoading(true)
     try {
-      const response = await fetch(`${API_URL}/buyers/?skip=0&limit=100`)
-      const data = await response.json()
-      setBuyers(data)
-      setFilteredBuyers(data)
-      toast.success(`Se cargaron ${data.length} compradores`)
+      const result = await APIService.get('/buyers/?skip=0&limit=100')
+
+      if (result.success) {
+        setBuyers(result.data)
+        setFilteredBuyers(result.data)
+        toast.success(`Se cargaron ${result.data.length} compradores`)
+      } else {
+        toast.error(result.error || 'Error al cargar compradores')
+        setBuyers([])
+      }
     } catch (error) {
       toast.error('Error al cargar compradores')
       console.error(error)

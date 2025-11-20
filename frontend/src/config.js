@@ -3,11 +3,8 @@ const isDevelopment = import.meta.env.DEV
 
 // En desarrollo, usar localhost
 // En producción, usar la URL relativa
-export const API_URL = isDevelopment 
-  ? 'http://localhost:8000' 
-  : import.meta.env.VITE_API_URL || '/api'
+export const API_URL = '/api'
 
-console.log('🔧 Configuración:')
-console.log('  Entorno:', isDevelopment ? 'Desarrollo' : 'Producción')
-console.log('  API URL:', API_URL)
-console.log('  Frontend URL:', window.location.origin)
+console.log('🔧 Frontend Configuration:')
+console.log('  API URL (relativo):', API_URL)
+console.log('  Vite proxy redirige /api a http://127.0.0.1:8000')

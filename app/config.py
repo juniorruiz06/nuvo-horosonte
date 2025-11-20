@@ -1,24 +1,27 @@
 from pydantic_settings import BaseSettings
-from functools import lru_cache
-import os
+from typing import Optional
 
 class Settings(BaseSettings):
     # Database
     database_url: str = "sqlite:///./mineral_agent.db"
     sqlalchemy_echo: bool = False
     
-    # Redis & Celery (optional)
-    redis_url: str = "redis://localhost:6379/0"
-    celery_broker_url: str = "redis://localhost:6379/0"
-    celery_result_backend: str = "redis://localhost:6379/0"
+    # APIs - Gemini
+    gemini_api_key: str
     
-    # APIs
-    gemini_api_key: str = ""
-    alpha_vantage_api_key: str = ""
-    metals_api_key: str = ""
-    bcrp_api_key: str = ""
+    # APIs - Claude
+    claude_api_key: str
+    claude_model: str
+    claude_max_tokens: int = 8192
+    claude_temperature: float = 0.7
     
-    # Verification
+    # APIs - OpenAI
+    openai_api_key: str
+    openai_model: str
+    openai_max_tokens: int = 16384
+    openai_temperature: float = 0.7
+    
+    # SUNAT & Verificación
     sunat_ruc_api: str = "https://www3.sunat.gob.pe/cl-ti-itmrconsruc"
     minem_portal: str = "https://www.gob.pe/minem"
     
@@ -27,14 +30,17 @@ class Settings(BaseSettings):
     log_file: str = "./logs/mineral_agent.log"
     
     # App
-    secret_key: str = "your-secret-key-change-in-production"
+    secret_key: str
     api_title: str = "MINERAL-AGENT"
     api_version: str = "1.0.0"
+    
+    # Scraping
+    scraping_timeout: int = 30
+    scraping_retries: int = 3
     
     class Config:
         env_file = ".env"
         case_sensitive = False
 
-@lru_cache()
-def get_settings():
+def get_settings() -> Settings:
     return Settings()

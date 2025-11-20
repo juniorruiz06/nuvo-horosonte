@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { Users, Coins, TrendingUp } from 'lucide-react'
 import StatCard from '../components/StatCard'
-import { API_URL } from '../config'
+import APIService from '../services/api'
 
 export default function Dashboard() {
   const [stats, setStats] = useState({
@@ -17,17 +17,14 @@ export default function Dashboard() {
 
   const loadDashboardData = async () => {
     try {
-      const buyersRes = await fetch(`${API_URL}/buyers/?limit=100`)
-      const buyers = await buyersRes.json()
-
-      const pricesRes = await fetch(`${API_URL}/prices/latest`)
-      const pricesData = await pricesRes.json()
+      const buyersResult = await APIService.get('/buyers/?limit=100')
+      const pricesResult = await APIService.get('/prices/latest')
 
       setStats({
-        buyers: buyers.length || 0,
-        goldPrice: pricesData.data?.oro?.price || 0,
-        silverPrice: pricesData.data?.plata?.price || 0,
-        copperPrice: pricesData.data?.cobre?.price || 0,
+        buyers: buyersResult.success ? buyersResult.data.length : 0,
+        goldPrice: pricesResult.success ? pricesResult.data.data?.oro?.price || 0 : 0,
+        silverPrice: pricesResult.success ? pricesResult.data.data?.plata?.price || 0 : 0,
+        copperPrice: pricesResult.success ? pricesResult.data.data?.cobre?.price || 0 : 0,
       })
     } catch (error) {
       console.error('Error loading dashboard:', error)

@@ -2,8 +2,7 @@ import React, { useState } from 'react'
 import { Search as SearchIcon } from 'lucide-react'
 import BuyerCard from '../components/BuyerCard'
 import toast from 'react-hot-toast'
-
-const API_URL = 'http://localhost:8000'
+import APIService from '../services/api'
 
 export default function Search() {
   const [mineral, setMineral] = useState('')
@@ -22,10 +21,15 @@ export default function Search() {
 
     setLoading(true)
     try {
-      const response = await fetch(`${API_URL}/buyers/?skip=0&limit=50`)
-      const buyers = await response.json()
-      setResults(buyers)
-      toast.success(`Se encontraron ${buyers.length} compradores`)
+      const result = await APIService.get(`/buyers/?skip=0&limit=50`)
+
+      if (result.success) {
+        setResults(result.data)
+        toast.success(`Se encontraron ${result.data.length} compradores`)
+      } else {
+        toast.error(result.error || 'Error al buscar compradores')
+        setResults([])
+      }
     } catch (error) {
       toast.error('Error al buscar compradores')
       console.error(error)

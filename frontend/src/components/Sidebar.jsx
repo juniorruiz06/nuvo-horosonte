@@ -1,11 +1,12 @@
 import React from 'react'
 import { 
   Home, Search, Users, TrendingUp, 
-  Calculator, MessageCircle, Building2
+  Calculator, MessageCircle, Building2, Zap, Cpu
 } from 'lucide-react'
 
 const menuItems = [
   { id: 'dashboard', label: 'Dashboard', icon: Home },
+  { id: 'task-assignment', label: 'Asignar Tareas', icon: Cpu },
   { id: 'search', label: 'Buscar Compradores', icon: Search },
   { id: 'ruc-search', label: 'Buscar por RUC/DNI', icon: Building2 },
   { id: 'buyers', label: 'Compradores', icon: Users },

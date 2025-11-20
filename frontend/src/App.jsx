@@ -10,7 +10,9 @@ import Buyers from './pages/Buyers'
 import Prices from './pages/Prices'
 import Budget from './pages/Budget'
 import Chat from './pages/Chat'
-import { API_URL } from './config'
+import AIAnalysis from './pages/AIAnalysis'
+import TaskAssignment from './pages/TaskAssignment'
+import { testBackendConnection } from './testConnection'
 
 function App() {
   const [activeTab, setActiveTab] = useState('dashboard')
@@ -24,31 +26,14 @@ function App() {
   }, [])
 
   const checkBackendStatus = async () => {
-    try {
-      console.log(`🔍 Verificando conexión a: ${API_URL}/health`)
-      const response = await fetch(`${API_URL}/health`, { 
-        timeout: 5000,
-        method: 'GET'
-      })
-      
-      if (response.ok) {
-        console.log('✅ Backend conectado')
-        setIsConnected(true)
-        setCheckingConnection(false)
-      } else {
-        console.log('❌ Backend respondió con error:', response.status)
-        setIsConnected(false)
-        setCheckingConnection(false)
-      }
-    } catch (error) {
-      console.error('❌ Error conectando a backend:', error)
-      setIsConnected(false)
-      setCheckingConnection(false)
-    }
+    setCheckingConnection(true)
+    const result = await testBackendConnection()
+    setIsConnected(result.success)
+    setCheckingConnection(false)
   }
 
   const renderContent = () => {
-    switch(activeTab) {
+    switch (activeTab) {
       case 'dashboard':
         return <Dashboard />
       case 'search':
@@ -63,6 +48,10 @@ function App() {
         return <Budget />
       case 'chat':
         return <Chat />
+      case 'ai-analysis':
+        return <AIAnalysis />
+      case 'task-assignment':
+        return <TaskAssignment />
       default:
         return <Dashboard />
     }
@@ -83,7 +72,7 @@ function App() {
                 </div>
               </div>
             ) : (
-              <ConnectionStatus isConnected={isConnected} apiUrl={API_URL} />
+              <ConnectionStatus isConnected={isConnected} />
             )}
             {renderContent()}
           </div>

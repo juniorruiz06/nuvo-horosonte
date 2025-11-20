@@ -1,8 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react'
 import { Send } from 'lucide-react'
 import toast from 'react-hot-toast'
-
-const API_URL = 'http://localhost:8000'
+import APIService from '../services/api'
 
 export default function Chat() {
   const [messages, setMessages] = useState([
@@ -33,22 +32,21 @@ export default function Chat() {
     setLoading(true)
 
     try {
-      const response = await fetch(`${API_URL}/chat/ask`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          message: input,
-          context: 'Soy un vendedor de minerales en Trujillo, Perú'
-        })
+      const result = await APIService.post('/chat/ask', {
+        message: input,
+        context: 'Soy un vendedor de minerales en Trujillo, Perú'
       })
 
-      const data = await response.json()
-      const botMessage = {
-        id: messages.length + 2,
-        sender: 'bot',
-        text: data.response || 'No pude procesar tu pregunta'
+      if (result.success) {
+        const botMessage = {
+          id: messages.length + 2,
+          sender: 'bot',
+          text: result.data.response || 'No pude procesar tu pregunta'
+        }
+        setMessages(prev => [...prev, botMessage])
+      } else {
+        toast.error(result.error || 'Error al conectar con el asistente')
       }
-      setMessages(prev => [...prev, botMessage])
     } catch (error) {
       toast.error('Error al conectar con el asistente')
       console.error(error)
